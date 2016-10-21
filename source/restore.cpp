@@ -160,12 +160,12 @@ void autoRestore(menu m)
     for(unsigned i = 0; i < m.getSize(); i++)
     {
         FS_Archive saveArch;
-        if(m.optSelected(i) && openSaveArch(&saveArch, sdTitle[i], false))
+        if(m.optSelected(i) && openArchive(&saveArch, ARCHIVE_USER_SAVEDATA, sdTitle[i], false))
             restoreData(sdTitle[i], saveArch, MODE_SAVE);
         FSUSER_CloseArchive(saveArch);
 
         FS_Archive extArch;
-        if(m.optSelected(i) && openExtdata(&extArch, sdTitle[i], false))
+        if(m.optSelected(i) && openArchive(&extArch, ARCHIVE_EXTDATA, sdTitle[i], false))
             restoreData(sdTitle[i], extArch, MODE_EXTDATA);
         FSUSER_CloseArchive(extArch);
     }

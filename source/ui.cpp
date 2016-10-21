@@ -26,12 +26,14 @@ bool confirm(const char *t)
         touchPosition p;
         hidTouchRead(&p);
 
-        if(yes.released(p) || (down & KEY_A))
+        yes.update(p), no.update(p);
+
+        if(yes.released() || (down & KEY_A))
         {
             ret = true;
             break;
         }
-        else if(no.released(p) || (down & KEY_B))
+        else if(no.released() || (down & KEY_B))
         {
             ret = false;
             break;
@@ -61,9 +63,11 @@ void showMessage(const char *t, const char *head)
         touchPosition p;
         hidTouchRead(&p);
 
+        ok.update(p);
+
         u32 down = hidKeysDown();
 
-        if(ok.released(p) || down & KEY_A)
+        if(ok.released() || down & KEY_A)
             break;
 
         sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
@@ -89,9 +93,11 @@ void showError(const char *t, unsigned error)
         touchPosition p;
         hidTouchRead(&p);
 
+        ok.update(p);
+
         u32 down = hidKeysDown();
 
-        if(ok.released(p) || down & KEY_A)
+        if(ok.released() || down & KEY_A)
             break;
 
         sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);

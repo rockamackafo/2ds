@@ -53,17 +53,19 @@ void showExtMenu()
     if(down & KEY_A)
     {
         FS_Archive extData;
+        if(isPogeybank())
+            fsEnd();
         switch(extMenu.getSelected())
         {
             case extOpts::expExt:
-                if(openExtdata(&extData, *curTitle, true))
+                if(openArchive(&extData, ARCHIVE_EXTDATA, *curTitle, true))
                 {
                     createTitleDir(*curTitle, MODE_EXTDATA);
                     backupData(*curTitle, extData, MODE_EXTDATA, false);
                 }
                 break;
             case extOpts::impExt:
-                if(openExtdata(&extData, *curTitle, true))
+                if(openArchive(&extData, ARCHIVE_EXTDATA, *curTitle, true))
                     restoreData(*curTitle, extData, MODE_EXTDATA);
                 else
                 {
@@ -72,7 +74,7 @@ void showExtMenu()
                 }
                 break;
             case extOpts::browseExt:
-                if(openExtdata(&extData, *curTitle, true))
+                if(openArchive(&extData, ARCHIVE_EXTDATA, *curTitle, true))
                     restoreDataSDPath(*curTitle, extData, MODE_EXTDATA);
                 else
                 {
@@ -89,6 +91,8 @@ void showExtMenu()
                 break;
         }
         FSUSER_CloseArchive(extData);
+        if(isPogeybank())
+            fsStart();
     }
 
     else if(down & KEY_B)

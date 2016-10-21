@@ -1,11 +1,17 @@
 #include <3ds.h>
+#include <sf2d.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 #include "dev.h"
 #include "menu.h"
 #include "util.h"
 #include "global.h"
+
+#include "button.h"
+#include "titles.h"
+#include "ui.h"
 
 //This is just for testing stuff.
 
@@ -15,6 +21,7 @@ void prepDevMenu()
 {
     devMenu.addItem("fsStart");
     devMenu.addItem("fsEnd");
+    devMenu.addItem("icnTest");
     devMenu.addItem("Back");
 
     devMenu.autoVert();
@@ -24,8 +31,37 @@ enum devOpts
 {
     _fsStart,
     _fsEnd,
+    _icnTest,
     _back
 };
+
+void keyWait(uint32_t key)
+{
+
+    while(1)
+    {
+        hidScanInput();
+
+        if(hidKeysDown() & key)
+            break;
+    }
+}
+
+extern std::vector<button> titleButtons;
+
+void icnTest()
+{
+    for(uint i = 0; i < titleButtons.size(); i++)
+    {
+        sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+            titleButtons[i].draw();
+        sf2d_end_frame();
+
+        sf2d_swapbuffers();
+
+        keyWait(KEY_A);
+    }
+}
 
 void showDevMenu()
 {
@@ -44,6 +80,9 @@ void showDevMenu()
                 break;
             case devOpts::_fsEnd:
                 fsEnd();
+                break;
+            case devOpts::_icnTest:
+                icnTest();
                 break;
             case devOpts::_back:
                 state = STATE_MAINMENU;

@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <sf2d.h>
 #include <sftd.h>
+#include <sfil.h>
 #include <string>
 #include <vector>
 #include <ctype.h>
@@ -45,13 +46,18 @@ extern void prepSDSelect();
 void sdTitlesInit()
 {
     //for refresh games
+    if(sdTitle.size() > 0)
+    {
+        for(unsigned int i = 0; i < sdTitle.size(); i++)
+            sdTitle[i].freeIcn();
+    }
     sdTitle.clear();
     if(fexists("titles"))
     {
         FILE *read = dbOpen("titles");
 
         //Check to make sure cache is updated since I changed it.
-        if(dbGetRev(read) == 1)
+        if(dbGetRev(read) == 2)
         {
             u32 count = dbGetCount(read);
             sdTitle.reserve(count);
@@ -107,7 +113,7 @@ void sdTitlesInit()
         std::sort(sdTitle.begin(), sdTitle.end(), sortTitles);
 
         FILE *db = dbCreate("titles");
-        dbWriteCount(db, sdTitle.size(), 1);
+        dbWriteCount(db, sdTitle.size(), 2);
         for(unsigned i = 0; i < sdTitle.size(); i++)
             dbWriteData(db, sdTitle[i]);
         fclose(db);
@@ -147,7 +153,7 @@ void nandTitlesInit()
     {
         FILE *read = dbOpen("nand");
 
-        if(dbGetRev(read) == 1)
+        if(dbGetRev(read) == 2)
         {
             u32 count = dbGetCount(read);
             nandTitle.reserve(count);
@@ -203,7 +209,7 @@ void nandTitlesInit()
         std::sort(nandTitle.begin(), nandTitle.end(), sortTitles);
 
         FILE *nand = dbCreate("nand");
-        dbWriteCount(nand, nandTitle.size(), 1);
+        dbWriteCount(nand, nandTitle.size(), 2);
         for(unsigned i = 0; i < nandTitle.size(); i++)
             dbWriteData(nand, nandTitle[i]);
         fclose(nand);

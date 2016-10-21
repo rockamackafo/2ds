@@ -76,6 +76,7 @@ std::u16string getSDPath()
 
         touchPosition p;
         hidTouchRead(&p);
+        help.update(p);
 
         if(down & KEY_A)
         {
@@ -101,7 +102,7 @@ std::u16string getSDPath()
             cPath = (char16_t *)"";
             break;
         }
-        else if(help.released(p))
+        else if(help.released())
             showMessage(helpText.c_str(), "Help");
 
         sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);

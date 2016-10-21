@@ -44,6 +44,7 @@ void evenString(std::string *test);
 
 //This detects if running under something as 3dsx
 bool runningUnder();
+bool isPogeybank();
 
 //returns if touchscreen is still being pressed anywhere
 bool touchPressed(touchPosition p);
@@ -53,11 +54,15 @@ bool fexists(const char *path);
 //Starts and ends fs sessions for HBL mode
 void fsStart();
 void fsEnd();
+
+//Shortcut for FSUSER_ControlArchive
 void fsCommitData(FS_Archive arch);
-Result FS_GetMediaType(FS_MediaType *m);
+
+void deleteSaveData(const FS_Archive arch, const titleData dat);
+void wipeDir(const FS_Archive w, const std::u16string path);
+
+void drawText(const char *txt, int x, int y);
 
 //Sets up menus
 void prepareMenus();
-
-sf2d_texture *createTexMem(struct img);
 #endif // UTIL_H

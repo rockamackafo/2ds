@@ -10,7 +10,7 @@
 #include "util.h"
 
 //I stole these from 3dbrew. Kill me.
-std::string descs[] =
+static const std::string descs[] =
 {
     "From 3DBrew.org: Home Menu attempts to open this archive during boot, if FS:OpenArchive doesn't return an error Home Menu seems to then launch the System Transfer application. Home Menu doesn't actually use this archive at all except for checking whether it exists.",
     "From 3DBrew.org: NAND JPEG/MPO files and phtcache.bin from the camera application are stored here. This also contains UploadData.dat. ",
@@ -71,14 +71,14 @@ void sharedBackupMenu()
         switch(sharedBackMenu.getSelected())
         {
             case sharedBack::_exp:
-                if(openSharedExt(&arch, selShared.extdata))
+                if(openArchive(&arch, ARCHIVE_SHARED_EXTDATA, selShared, true))
                 {
                     createTitleDir(selShared, MODE_SHARED);
                     backupData(selShared, arch, MODE_SHARED, false);
                 }
                 break;
             case sharedBack::_imp:
-                if(openSharedExt(&arch, selShared.extdata))
+                if(openArchive(&arch, ARCHIVE_SHARED_EXTDATA, selShared, true))
                     restoreData(selShared, arch, MODE_SHARED);
                 break;
             case sharedBack::_back:

@@ -5,6 +5,7 @@
 #include <sftd.h>
 
 #include <string>
+#include <vector>
 
 #include "titledata.h"
 
@@ -15,11 +16,21 @@
 #define MODE_BOSS 3
 #define MODE_SHARED 4
 
-#define BUILD_DATE std::u32string(U"9-5-2016")
+#define BUILD_DATE std::u32string(U"10-21-2016")
+
+//Needed for bank workaround / ASLR
+#define POKEBANK 0x00040000000C9B00
+
+#define COL_BLACK RGBA8(0, 0, 0, 255)
+
+typedef unsigned int uint;
 
 extern int state, prevState;
-extern titleData *curTitle;
+extern const titleData *curTitle;
 extern u8 sysLanguage;
+extern u64 runningID;
+
+extern sf2d_texture *selFrame;
 
 enum states
 {
@@ -46,8 +57,12 @@ extern unsigned buff_size;
 extern sftd_font *font;
 
 //This is for the bar you see at the top
-void topBarInit();
-void topBarExit();
+void globalImgsInit();
+void globalImgsExit();
+
+//bg
+void bgDrawTop();
+void bgDrawBottom();
 
 //SDMC Archive. Seems to write faster using this. Might just be me though
 extern FS_Archive sdArch;

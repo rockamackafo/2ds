@@ -23,33 +23,71 @@
 #include "dev.h"
 #include "ui.h"
 
-unsigned buff_size = 0x40000;
+//Transfer buffer size
+unsigned buff_size = 0x10000;
 
+//font
 sftd_font * font;
 
-static sf2d_texture * bar;
+//top bar texture
+static sf2d_texture * bar, *bgTop, *bgBot;
 
-void topBarInit()
-{
-    bar = sfil_load_PNG_file("romfs:/img/topBar.png", SF2D_PLACE_RAM);
-}
+//selected frame. Needed for both cia and nand, so it goes here.
+sf2d_texture *selFrame;
 
-void topBarExit()
-{
-    sf2d_free_texture(bar);
-}
+//ID the program is using
+u64 runningID;
 
+//SDMC archive
 FS_Archive sdArch;
 
+/*
+hbl = homebrew loader mode
+devMode = devMode
+kill = kill program
+*/
 bool hbl = false, devMode = false, kill = false;
 
 //config
 bool centered = true, autoBack = false, useLang = false;
+u8 sysLanguage = 1;
 
 //default colors
 u8 clearColor[3] = {0, 0, 0};
 u8 selColor[3] = {0, 255, 0};
 u8 unSelColor[3] = {128, 128, 128};
+
+//controls menus shown. Used so home button works.
+int state = states::STATE_MAINMENU, prevState = states::STATE_MAINMENU;
+
+//Pointer to sdTitle being used.
+const titleData *curTitle = NULL;
+
+void globalImgsInit()
+{
+    bar = sfil_load_PNG_file("romfs:/img/topBar.png", SF2D_PLACE_RAM);
+    bgTop = sfil_load_PNG_file("romfs:/img/backTop.png", SF2D_PLACE_RAM);
+    bgBot = sfil_load_PNG_file("romfs:/img/backBottom.png", SF2D_PLACE_RAM);
+    selFrame = sfil_load_PNG_file("romfs:/img/selFrame.png", SF2D_PLACE_RAM);
+}
+
+void globalImgsExit()
+{
+    sf2d_free_texture(bar);
+    sf2d_free_texture(bgTop);
+    sf2d_free_texture(bgBot);
+    sf2d_free_texture(selFrame);
+}
+
+void bgDrawTop()
+{
+    sf2d_draw_texture(bgTop, 0, 0);
+}
+
+void bgDrawBottom()
+{
+    sf2d_draw_texture(bgBot, 0, 0);
+}
 
 //draws the bar shown up top
 void drawTopBar(const std::u32string nfo)
@@ -66,10 +104,6 @@ void drawTopBar(const std::u32string nfo)
 
 //I needed a quick way to get most of it under one loop without having to completely rewrite it
 //This is what I came up with.
-int state = states::STATE_MAINMENU, prevState = states::STATE_MAINMENU;
-titleData *curTitle = NULL;
-u8 sysLanguage = 1;
-
 void handleState()
 {
     switch(state)
@@ -204,11 +238,13 @@ void mainMenu()
     killApp(down);
 
     sf2d_start_frame(GFX_TOP, GFX_LEFT);
-    drawTopBar(std::u32string(U"JKSM - " + BUILD_DATE));
+    bgDrawTop();
+    drawTopBar(std::u32string(U"JKSV - " + BUILD_DATE));
     mMenu.draw();
     sf2d_end_frame();
 
     sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
+    bgDrawBottom();
     sf2d_end_frame();
 
     sf2d_swapbuffers();

@@ -41,10 +41,10 @@ smdh_s *loadSMDH(u32 Low, u32 High, u8 Media)
     static const u32 filePath[] = { 0x0, 0x0, 0x2, 0x6E6F6369, 0x0};
     smdh_s *Ret = new smdh_s;
 
-    FS_Path binArchPath = {PATH_BINARY, 0x10, archPath};
-    FS_Path binFilePath = {PATH_BINARY, 0x14, filePath};
-
-    Result Res = FSUSER_OpenFileDirectly(&FileHandle, ARCHIVE_SAVEDATA_AND_CONTENT, binArchPath, binFilePath, FS_OPEN_READ, 0);
+    Result Res = FSUSER_OpenFileDirectly(&FileHandle, ARCHIVE_SAVEDATA_AND_CONTENT,
+                                         (FS_Path){PATH_BINARY, 0x10, archPath},
+                                         (FS_Path){PATH_BINARY, 0x14, filePath},
+                                          FS_OPEN_READ, 0);
     if(Res == 0)
     {
         //For bytes read.

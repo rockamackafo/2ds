@@ -5,6 +5,7 @@
 #include <sf2d.h>
 #include <string>
 
+#include "titledata.h"
 #include "textbox.h"
 
 /*
@@ -17,16 +18,22 @@ class button
 {
     public:
         button(const char *sText, int sX, int sY, int sWidth, int sHeight);
+        button(titleData *d, int sX, int sY);
+        const titleData *getDat();
+        void update(const touchPosition p);
         void draw();
-        bool isOver(touchPosition p);
-        bool released(touchPosition p);
+        bool isOver();
+        bool released();
+        int getX();
+        int getY();
 
     private:
-        bool Pressed;
+        bool Pressed, initial;
         int X, Y, width, height;
         int textX, textY;
         std::string text;
-        touchPosition Prev;
+        touchPosition prev, cur;
+        titleData *dat = NULL;
 };
 
 #endif // BUTTON_H

@@ -1,7 +1,7 @@
 BasicInfo:
-  Title                   : "JKSM"
+  Title                   : "JKSV"
   ProductCode             : "CTR-HB-JKSV"
-  Logo                    : Nintendo
+  Logo                    : homebrew
 
 RomFs:
   RootPath                : romfs

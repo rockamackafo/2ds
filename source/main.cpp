@@ -3,14 +3,13 @@
 #include <sf2d.h>
 #include <sftd.h>
 #include <string>
-#include <cstdlib>
-#include <fstream>
 
 #include "sys.h"
 #include "global.h"
 #include "util.h"
 #include "3dsx.h"
 #include "titles.h"
+#include "hbfilter.h"
 
 int main(int argc, const char * argv[])
 {
@@ -25,24 +24,31 @@ int main(int argc, const char * argv[])
 
     sysInit();
 
-    if(runningUnder() && !devMode)
+    if(runningUnder() && !devMode && !isPogeybank())
     {
         hbl = true;
         start3dsxMode();
     }
     else
     {
+        loadFilterList();
+
         sdTitlesInit();
-        for(unsigned i = 0; i < sdTitle.size(); i++)
-            renameDir(sdTitle[i]);
         nandTitlesInit();
-        for(unsigned i = 0; i < nandTitle.size(); i++)
-            renameDir(nandTitle[i]);
+
+        if(isPogeybank())
+        {
+            hbl = true;
+            fsStart();
+        }
 
         while(aptMainLoop() && !kill)
         {
             handleState();
         }
+
+        if(isPogeybank())
+            fsEnd();
     }
 
     sysExit();

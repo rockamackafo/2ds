@@ -27,9 +27,9 @@ std::string GetString(const char *hint)
     swkbdSetHintText(&keyState, hint);
     swkbdSetFeatures(&keyState, SWKBD_PREDICTIVE_INPUT);
     SwkbdDictWord dates[2];
-    swkbdSetDictWord(&dates[0], "2016", GetDate(FORMAT_YDM));
-    swkbdSetDictWord(&dates[1], "2016", GetDate(FORMAT_YMD));
-    swkbdSetInitialText(&keyState, GetDate(FORMAT_YMD));
+    swkbdSetDictWord(&dates[0], "2016", GetDate(FORMAT_YDM).c_str());
+    swkbdSetDictWord(&dates[1], "2016", GetDate(FORMAT_YMD).c_str());
+    swkbdSetInitialText(&keyState, GetDate(FORMAT_YMD).c_str());
     swkbdSetDictionary(&keyState, dates, 2);
 
     swkbdInputText(&keyState, input, 64);

@@ -6,6 +6,8 @@
 #include "db.h"
 #include "titledata.h"
 
+#include "ui.h"
+
 //opens, creates and returns a file for writing to.
 FILE *dbCreate(const char *path)
 {
@@ -23,12 +25,8 @@ FILE *dbOpen(const char *path)
 //This is for writing the number of titles installed
 void dbWriteCount(FILE *db, u32 count, u8 rev)
 {
-    u8 tmp[2];
-
-    tmp[0] = count;
-    tmp[1] = count >> 8;
-
-    fwrite(tmp, 1, 2, db);
+    //Write count as 16bit, because who has more than 65535 titles?
+    fwrite(&count, sizeof(uint16_t), 1, db);
 
     fputc(rev, db);
 }
@@ -38,8 +36,7 @@ void dbWriteCount(FILE *db, u32 count, u8 rev)
 u32 dbGetCount(FILE *db)
 {
     u32 ret = 0;
-    ret += fgetc(db);
-    ret += fgetc(db) << 8;
+    fread(&ret, sizeof(uint16_t), 1, db);
 
     fgetc(db);
 
@@ -56,6 +53,7 @@ u8 dbGetRev(FILE *db)
     return ret;
 }
 
+//copies title into a 0x40 char16_t array so that I can write a set size
 void copyu16(char16_t *out, std::u16string in)
 {
     memset(out, 0, sizeof(char16_t) * 0x40);
@@ -78,9 +76,11 @@ void dbWriteData(FILE *db, const titleData w)
     sprintf(prodOut, "%s", w.prodCode.c_str());
     fwrite(prodOut, 1, 16, db);
     fputc(0, db);
-
+    //full title id
     fwrite(&w.id, sizeof(u64), 1, db);
-
+    fputc(0, db);
+    //icon
+    fwrite(w.icn->tex.data, 1, w.icn->tex.size, db);
     fputc(0, db);
 }
 
@@ -103,7 +103,10 @@ titleData dbGetData(FILE *db)
 
     fread(&ret.id, sizeof(u64), 1, db);
 
-    //last 0x00
+    fgetc(db);
+
+    ret.icn = sf2d_create_texture(48, 48, TEXFMT_RGBA8, SF2D_PLACE_RAM);
+    fread(ret.icn->tex.data, 1, 0x4000, db);
     fgetc(db);
 
     //this takes care of a few things needed

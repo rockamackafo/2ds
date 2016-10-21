@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <sf2d.h>
 #include <sftd.h>
+#include <citro3d.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <vector>
@@ -14,19 +15,31 @@
 #include "util.h"
 #include "titles.h"
 #include "hbfilter.h"
+#include "archive.h"
 
 void loadImgs()
 {
-    topBarInit();
+    globalImgsInit();
     textboxInit();
     progressBarInit();
+    frameInit();
 }
 
 void freeImgs()
 {
-    topBarExit();
+    globalImgsExit();
     textboxExit();
     progressBarExit();
+    frameFree();
+
+    if(!hbl || isPogeybank())
+    {
+        unsigned int i;
+        for(i = 0; i < sdTitle.size(); i++)
+            sdTitle[i].freeIcn();
+        for(i = 0; i < nandTitle.size(); i++)
+            nandTitle[i].freeIcn();
+    }
 }
 
 void loadCol()
@@ -89,7 +102,6 @@ void sysInit()
 
     //Start sftd
     sftd_init();
-    //Load font
     font = sftd_load_font_mem(font_ttf, font_ttf_size);
 
     //Start 3ds services
@@ -100,14 +112,10 @@ void sysInit()
     cfguInit();
     httpcInit(0);
 
-    loadFilterList();
+    APT_GetProgramID(&runningID);
 
-    //Open SDMC archive
-    Result Res = FSUSER_OpenArchive(&sdArch, ARCHIVE_SDMC, fsMakePath(PATH_EMPTY, ""));
-    if(Res)
-    {
-        showError("Error opening SDMC archive", (unsigned)Res);
-    }
+    titleData blank;
+    openArchive(&sdArch, ARCHIVE_SDMC, blank, true);
 
     if(useLang)
         CFGU_GetSystemLanguage(&sysLanguage);

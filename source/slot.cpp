@@ -65,8 +65,14 @@ std::u16string getFolder(const titleData dat, int mode, bool newFolder)
         }
         else if(down & KEY_A)
         {
-            ret = dir.retItem(folderMenu.getSelected());
-            break;
+            if(dir.isDir(folderMenu.getSelected()))
+            {
+                ret = dir.retItem(folderMenu.getSelected());
+                break;
+            }
+            else
+                showMessage("Put this file inside a folder to import it!", "Info");
+
         }
         else if(down & KEY_X)
         {

@@ -90,7 +90,7 @@ bool backupData(const titleData dat, FS_Archive arch, int mode, bool autoName)
     //if auto, just use date/time
     if(autoName)
     {
-        slot = tou16(GetDate(FORMAT_YMD));
+        slot = tou16(GetDate(FORMAT_YMD).c_str());
         if(autoBack)
             slot += tou16(" - AutoBack");
     }
@@ -135,7 +135,7 @@ void autoBackup(menu m)
         //This is for titles with no save archive ex. Fantasy Life
         bool dumped = false;
         FS_Archive saveArch;
-        if(m.optSelected(i) && openSaveArch(&saveArch, sdTitle[i], false))   //if it's selected and we can open save archive
+        if(m.optSelected(i) && openArchive(&saveArch, ARCHIVE_USER_SAVEDATA, sdTitle[i], false))   //if it's selected and we can open save archive
         {
             createTitleDir(sdTitle[i], MODE_SAVE);
             backupData(sdTitle[i], saveArch, MODE_SAVE, true);
@@ -145,7 +145,7 @@ void autoBackup(menu m)
         FSUSER_CloseArchive(saveArch);
 
         FS_Archive extArch;
-        if(m.optSelected(i) && openExtdata(&extArch, sdTitle[i], false))
+        if(m.optSelected(i) && openArchive(&extArch, ARCHIVE_EXTDATA, sdTitle[i], false))
         {
             createTitleDir(sdTitle[i], MODE_EXTDATA);
             backupData(sdTitle[i], extArch, MODE_EXTDATA, true);

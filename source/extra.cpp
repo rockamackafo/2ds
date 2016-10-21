@@ -21,7 +21,9 @@ besides Nintendo's official one.
 void setPlayCoins()
 {
     FS_Archive shared;
-    if(openSharedExt(&shared, 0xf000000b))
+    titleData f0b;
+    f0b.extdata = 0xf000000b;
+    if(openArchive(&shared, ARCHIVE_SHARED_EXTDATA, f0b, true))
     {
         fsFile gameCoin(shared, "/gamecoin.dat", FS_OPEN_READ | FS_OPEN_WRITE);
 

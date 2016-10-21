@@ -6,7 +6,7 @@
 
 #include <string>
 
-char *GetDate(int Format);
+std::string GetDate(int Format);
 std::string RetTime();
 
 #endif // DATE_H

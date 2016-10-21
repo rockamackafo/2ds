@@ -27,17 +27,15 @@ enum hblOpts
 
 void start3dsxMode()
 {
-    u64 id;
-    APT_GetProgramID(&id);
-
+    //I need to start and end the session because some of this stuff doesn't work under it.
     fsStart();
     FS_MediaType getMedia;
-    FS_GetMediaType(&getMedia);
+    FSUSER_GetMediaType(&getMedia);
     fsEnd();
 
     //This doesn't work if you start the FS session.
     titleData data;
-    data.init(id, getMedia);
+    data.init(runningID, getMedia);
 
     renameDir(data);
 
@@ -71,14 +69,14 @@ void start3dsxMode()
             switch(hblMenu.getSelected())
             {
                 case hblOpts::expSav:
-                    if(openSaveArch3dsx(&arch))
+                    if(openArchive(&arch, ARCHIVE_SAVEDATA, data, true))
                     {
                         createTitleDir(data, MODE_SAVE);
                         backupData(data, arch, MODE_SAVE, false);
                     }
                     break;
                 case hblOpts::impSav:
-                    if(openSaveArch3dsx(&arch))
+                    if(openArchive(&arch, ARCHIVE_SAVEDATA, data, true))
                         restoreData(data, arch, MODE_SAVE);
                     break;
                 case hblOpts::delSV:
@@ -88,14 +86,14 @@ void start3dsxMode()
                     fsStart();
                     break;
                 case hblOpts::expExt:
-                    if(openExtdata(&arch, data, true))
+                    if(openArchive(&arch, ARCHIVE_EXTDATA, data, true))
                     {
                         createTitleDir(data, MODE_EXTDATA);
                         backupData(data, arch, MODE_EXTDATA, false);
                     }
                     break;
                 case hblOpts::impExt:
-                    if(openExtdata(&arch, data, false))
+                    if(openArchive(&arch, ARCHIVE_EXTDATA, data, true))
                         restoreData(data, arch, MODE_EXTDATA);
                     break;
                 case hblOpts::extra:

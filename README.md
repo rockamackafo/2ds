@@ -14,4 +14,7 @@ A custom font can be used by placing it in the sd:/JKSV folder and naming it "fo
 Due to the fact that I cannot keep up with homebrew releases anymore, I've decided to make the filter list external. If you need to add a program to it, copy its lower ID to the end of filter.txt
 in your JKSV folder as 0xXXXXXXXX.
 
-A big thanks to everyone who has worked on ctrulib.
+Credits/thanks:
+smealum and everyone who worked on smdh.c in 3ds_hb_menu
+xerpi for his graphics libs
+Everyone who has contributed to ctrulib

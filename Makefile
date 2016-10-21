@@ -26,15 +26,15 @@ include $(DEVKITARM)/3ds_rules
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
-TARGET      :=  JKSM
+TARGET      :=  JKSV
 BUILD		:=	build
 SOURCES		:=	source
 DATA		:=	data
 INCLUDES	:=	include
 ROMFS       :=  romfs
 
-APP_TITLE		:= JK's Save Manager
-APP_DESCRIPTION	:= Save Manager
+APP_TITLE		:= JKSV
+APP_DESCRIPTION	:= Save Manage
 APP_AUTHOR		:= JK
 
 #---------------------------------------------------------------------------------
@@ -139,7 +139,7 @@ $(BUILD):
 #---------------------------------------------------------------------------------
 clean:
 	@echo clean ...
-	@rm -fr $(BUILD) $(TARGET).3dsx $(OUTPUT).smdh $(TARGET).elf $(TARGET)-strip.elf $(TARGET).cia $(TARGET).3ds
+	@rm -fr $(BUILD) $(TARGET).3dsx $(TARGET).elf $(TARGET)-strip.elf $(TARGET).cia $(TARGET).3ds
 #---------------------------------------------------------------------------------
 $(TARGET)-strip.elf: $(BUILD)
 	@$(STRIP) $(TARGET).elf -o $(TARGET)-strip.elf
@@ -149,7 +149,7 @@ cci: $(TARGET)-strip.elf
 #---------------------------------------------------------------------------------
 cia: $(TARGET)-strip.elf
 	@makerom -f cia -o $(TARGET).cia -elf $(TARGET)-strip.elf -rsf $(TARGET).rsf -exefslogo -target t -icon icon -banner banner
-	@echo Built JKSM.cia
+	@echo Built JKSV.cia
 #---------------------------------------------------------------------------------
 send: $(BUILD)
 	@3dslink $(TARGET).3dsx

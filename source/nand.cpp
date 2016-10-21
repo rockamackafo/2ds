@@ -102,40 +102,40 @@ void nandBackup()
         switch(nBackupMenu.getSelected())
         {
             case sysOpts::expSys:
-                if(openSysSave(&arch, *sysTitle))
+                if(openArchive(&arch, ARCHIVE_SYSTEM_SAVEDATA, *sysTitle, true))
                 {
                     createTitleDir(*sysTitle, MODE_SYSSAVE);
                     backupData(*sysTitle, arch, MODE_SYSSAVE, false);
                 }
                 break;
             case sysOpts::impSys:
-                if(openSysSave(&arch, *sysTitle))
+                if(openArchive(&arch, ARCHIVE_SYSTEM_SAVEDATA, *sysTitle, true))
                 {
                     restoreData(*sysTitle, arch, MODE_SYSSAVE);
                 }
                 break;
             case sysOpts::expExt:
-                if(openExtdata(&arch, *sysTitle, true))
+                if(openArchive(&arch, ARCHIVE_EXTDATA, *sysTitle, true))
                 {
                     createTitleDir(*sysTitle, MODE_EXTDATA);
                     backupData(*sysTitle, arch, MODE_EXTDATA, false);
                 }
                 break;
             case sysOpts::impExt:
-                if(openExtdata(&arch, *sysTitle, true))
+                if(openArchive(&arch, ARCHIVE_EXTDATA, *sysTitle, true))
                 {
                     restoreData(*sysTitle, arch, MODE_EXTDATA);
                 }
                 break;
             case sysOpts::expBoss:
-                if(openBossExt(&arch, *sysTitle))
+                if(openArchive(&arch, ARCHIVE_BOSS_EXTDATA, *sysTitle, true))
                 {
                     createTitleDir(*sysTitle, MODE_BOSS);
                     backupData(*sysTitle, arch, MODE_BOSS, false);
                 }
                 break;
             case sysOpts::impBoss:
-                if(openBossExt(&arch, *sysTitle))
+                if(openArchive(&arch, ARCHIVE_BOSS_EXTDATA, *sysTitle, true))
                 {
                     restoreData(*sysTitle, arch, MODE_BOSS);
                 }

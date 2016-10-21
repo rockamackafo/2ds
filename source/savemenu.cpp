@@ -23,8 +23,7 @@ enum saveOpts
     browseSav,
     delSV,
     delSav,
-    back,
-    fun
+    back
 };
 
 static menu saveMenu(128, 80, false, true);
@@ -60,18 +59,18 @@ void showSaveMenu()
         switch(saveMenu.getSelected())
         {
             case saveOpts::expSav:
-                if(openSaveArch(&saveArch, *curTitle, true))
+                if(openArchive(&saveArch, ARCHIVE_USER_SAVEDATA, *curTitle, true))
                 {
                     createTitleDir(*curTitle, MODE_SAVE);
                     backupData(*curTitle, saveArch, MODE_SAVE, false);
                 }
                 break;
             case saveOpts::impSav:
-                if(openSaveArch(&saveArch, *curTitle, true))
+                if(openArchive(&saveArch, ARCHIVE_USER_SAVEDATA, *curTitle, true))
                     restoreData(*curTitle, saveArch, MODE_SAVE);
                 break;
             case saveOpts::browseSav:
-                if(openSaveArch(&saveArch, *curTitle, true))
+                if(openArchive(&saveArch, ARCHIVE_USER_SAVEDATA, *curTitle, true))
                     restoreDataSDPath(*curTitle, saveArch, MODE_SAVE);
                 break;
             case saveOpts::delSV:
@@ -79,10 +78,10 @@ void showSaveMenu()
                     showMessage("Secure value successfully deleted!", "Success!");
                 break;
             case saveOpts::delSav:
-                if(openSaveArch(&saveArch, *curTitle, true) && confirm("Are you sure you want to delete this title's current save data?"))
+                if(openArchive(&saveArch, ARCHIVE_USER_SAVEDATA, *curTitle, true) && confirm("Are you sure you want to delete this title's current save data?"))
                 {
                     FSUSER_DeleteDirectoryRecursively(saveArch, fsMakePath(PATH_ASCII, "/"));
-                    FSUSER_ControlArchive(saveArch, ARCHIVE_ACTION_COMMIT_SAVE_DATA, NULL, 0, NULL, 0);
+                    fsCommitData(saveArch);
                 }
                 break;
             case saveOpts::back:

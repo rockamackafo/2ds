@@ -10,6 +10,9 @@
 #include "titledata.h"
 #include "global.h"
 #include "backupmenu.h"
+#include "util.h"
+
+static titleData cartData;
 
 bool cartCheck()
 {
@@ -36,6 +39,8 @@ bool cartCheck()
 
 void cartManager()
 {
+    if(isPogeybank())
+        fsEnd();
     if(!cartCheck())
     {
         state = states::STATE_MAINMENU;
@@ -46,14 +51,14 @@ void cartManager()
     AM_GetTitleList(NULL, MEDIATYPE_GAME_CARD, 1, &cartID);
 
     //use titledata to take care of everything
-    static titleData cartData;
     if(cartData.id != cartID || !cartData.initd)
     {
         cartData.init(cartID, MEDIATYPE_GAME_CARD);
     }
+    if(isPogeybank())
+        fsStart();
 
     curTitle = &cartData;
-    prevState = states::STATE_MAINMENU;
-
-    backupMenu();
+    state = STATE_BACKUPMENU;
+    prevState = STATE_MAINMENU;
 }

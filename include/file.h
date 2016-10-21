@@ -24,6 +24,7 @@ class fsFile
 
         //returns if file is opened
         bool isOpened();
+        //end of file
         bool eof();
 
         //Reads to buff. Returns number of read bytes
