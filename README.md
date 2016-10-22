@@ -15,6 +15,9 @@ Due to the fact that I cannot keep up with homebrew releases anymore, I've decid
 in your JKSV folder as 0xXXXXXXXX.
 
 Credits/thanks:
+
 smealum and everyone who worked on smdh.c in 3ds_hb_menu
+
 xerpi for his graphics libs
+
 Everyone who has contributed to ctrulib

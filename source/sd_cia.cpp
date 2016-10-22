@@ -24,16 +24,17 @@ static uint16_t page = 0, maxPages = 0, selected = 0;
 void prepSDSelect()
 {
     titleButtons.clear();
-    unsigned int i, x = 20, y = 36;
+    maxPages = 0;
+    unsigned int i, x = 23, y = 38;
     for(i = 0; i < sdTitle.size(); i++, x += 56)
     {
         if(x > 280)
         {
-            x = 20;
+            x = 23;
             y += 56;
             if(y > 194)
             {
-                y = 36;
+                y = 38;
                 maxPages++;
             }
         }
@@ -55,7 +56,6 @@ void sdStartSelect()
     hidScanInput();
 
     u32 down = hidKeysDown();
-    u32 held = hidKeysHeld();
 
     touchPosition pos;
     hidTouchRead(&pos);
@@ -69,14 +69,29 @@ void sdStartSelect()
         if(page  == 0)
             page = maxPages;
         else
+        {
             --page;
+            if(selected - 15 < 0)
+                selected = 0;
+            else
+                selected -= 15;
+        }
     }
     else if(down & KEY_R || next.released())
     {
         if(page == maxPages)
+        {
             page = 0;
+            selected = 0;
+        }
         else
+        {
             ++page;
+            if((uint)selected + 15 < titleButtons.size())
+                selected += 15;
+            else
+                selected = titleButtons.size() - 1;
+        }
     }
     else if(down & KEY_DOWN)
     {
@@ -86,17 +101,17 @@ void sdStartSelect()
     {
         selected -= 5;
     }
-    else if((down & KEY_LEFT) && selected > 0)
+    else if((down & KEY_LEFT) && (selected > 0))
     {
-        selected--;
+        --selected;
     }
-    else if((down & KEY_RIGHT) && selected < titleButtons.size())
+    else if((down & KEY_RIGHT) && (selected < titleButtons.size() - 1))
     {
-        selected++;
+        ++selected;
     }
     else if(down & KEY_A)
     {
-        curTitle = titleButtons[selected].getDat();
+        curTitle = &sdTitle[selected];
         prevState = STATE_CIAMENU;
         state = STATE_BACKUPMENU;
     }
@@ -124,7 +139,7 @@ void sdStartSelect()
 
         if(selected == i && titleButtons[i].released())
         {
-            curTitle = titleButtons[i].getDat();
+            curTitle = &sdTitle[selected];
             prevState = STATE_CIAMENU;
             state = STATE_BACKUPMENU;
         }

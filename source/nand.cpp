@@ -3,6 +3,7 @@
 #include <sftd.h>
 #include <string.h>
 #include <string>
+#include <vector>
 
 #include "titles.h"
 #include "nand.h"
@@ -14,19 +15,37 @@
 #include "menu.h"
 #include "titledata.h"
 #include "archive.h"
+#include "button.h"
 
-titleData * sysTitle = NULL;
+std::vector<button> nandButtons;
 
-static menu nandMenu(40, 20, false, false);
+static button prev("<-", 0, 0, 32, 32), next("->", 288, 0, 32, 32), backButton("Back", 0, 208, 48, 32);
+
+static uint16_t page = 0, maxPage = 0, selected = 0;
+
+const titleData * sysTitle = NULL;
 
 void prepNandSelect()
 {
-    for(unsigned i = 0; i < nandTitle.size(); i++)
-        nandMenu.addItem(nandTitle[i].name);
-    if(centered)
-        nandMenu.centerOpts();
+    nandButtons.clear();
+    maxPage = 0;
+    uint i, x = 23, y = 38;
+    for(i = 0; i < nandTitle.size(); i++, x += 56)
+    {
+        if(x > 280)
+        {
+            x = 23;
+            y += 56;
+            if(y > 194)
+            {
+                maxPage++;
+                y = 38;
+            }
+        }
 
-    nandMenu.autoVert();
+        button newNandButton(&nandTitle[i], x, y);
+        nandButtons.push_back(newNandButton);
+    }
 }
 
 void nandStartSelect()
@@ -34,27 +53,121 @@ void nandStartSelect()
     hidScanInput();
 
     u32 down = hidKeysDown();
-    u32 held = hidKeysHeld();
 
-    nandMenu.handleInput(down, held);
+    touchPosition pos;
+    hidTouchRead(&pos);
 
-    if(down & KEY_A)
+    next.update(pos);
+    prev.update(pos);
+    backButton.update(pos);
+
+    if((down & KEY_L) || prev.released())
     {
-        sysTitle = &nandTitle[nandMenu.getSelected()];
+        if(page == 0)
+            page = maxPage;
+        else
+        {
+            --page;
+            if(selected - 15 < 0)
+                selected = 0;
+            else
+                selected -= 15;
+        }
+    }
+    else if(down & KEY_R || next.released())
+    {
+        if(page == maxPage)
+        {
+            page = 0;
+            selected = 0;
+        }
+        else
+        {
+            page++;
+            if((uint)selected + 15 < nandButtons.size())
+                selected += 15;
+            else
+                selected = nandButtons.size() - 1;
+        }
+    }
+    else if(down & KEY_DOWN)
+    {
+        selected += 5;
+    }
+    else if(down & KEY_UP)
+    {
+        selected -= 5;
+    }
+    else if((down & KEY_LEFT) && (selected > 0))
+    {
+        --selected;
+    }
+    else if((down & KEY_RIGHT) && (selected < nandButtons.size() - 1))
+    {
+        ++selected;
+    }
+    else if(down & KEY_A)
+    {
+        sysTitle = &nandTitle[selected];
         state = STATE_NANDBACKUP;
     }
-    else if(down & KEY_B)
+    else if((down & KEY_B) || backButton.released())
+    {
         state = STATE_MAINMENU;
+        return;
+    }
+
+    //nandButtons begin
+    u8 disp = 0;
+    if((uint)(page * 15 + 15) > nandButtons.size())
+    {
+        disp = nandButtons.size() - ((page - 1) * 15 + 15);
+    }
+    else
+        disp = 15;
+
+
+    for(uint16_t i = (page * 15); i < (page * 15) + disp; i++)
+    {
+        nandButtons[i].update(pos);
+
+        if(selected == i && nandButtons[i].released())
+        {
+            sysTitle = &nandTitle[selected];
+            state = STATE_NANDBACKUP;
+        }
+        else if(nandButtons[i].released())
+            selected = i;
+
+    }
+    //nandButtons end
 
     killApp(down);
 
     sf2d_start_frame(GFX_TOP, GFX_LEFT);
-    nandMenu.draw();
+    bgDrawTop();
     drawTopBar(U"Select System Title");
+    nandTitle[selected].printInfo();
+    if(devMode)
+    {
+        sftd_draw_textf(font, 0, 16, COL_BLACK, 12, "Page: %u", page);
+        sftd_draw_textf(font, 0, 32, COL_BLACK, 12, "FPS: %f", sf2d_get_fps());
+    }
     sf2d_end_frame();
 
     sf2d_start_frame(GFX_BOTTOM, GFX_LEFT);
-    nandTitle[nandMenu.getSelected()].printInfo();
+    bgDrawBottom();
+    for(uint16_t i = (page * 15); i < (page * 15) + disp; i++)
+    {
+        if(selected == i)
+            sf2d_draw_texture(selFrame, nandButtons[i].getX() - 2, nandButtons[i].getY() - 2);
+
+        nandButtons[i].draw();
+    }
+
+    next.draw();
+    prev.draw();
+    backButton.draw();
     sf2d_end_frame();
 
     sf2d_swapbuffers();
